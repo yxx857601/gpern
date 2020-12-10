@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>leli</title>
+   <style>
+      body{
+         margin: 0;
+         overflow: -moz-scrollbars-none;
+         -ms-overflow-style: none; 
+      }
+      body::-webkit-scrollbar {
+         display: none;
+      }
+      .nav{
+         background-color:white;
+         width:100%;
+         height:50px;
+         position: fixed;
+         display: flex;
+      }
+      .nav-item{
+         height: 100%;
+         width: 100px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         cursor: pointer;
+      }
+      .nav-item:hover{
+         color: blue;
+      }
+      .content{
+         min-width: 1200px;
+         min-height: 672px;
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+         padding-top: 50px;
+      }
+      .content div{
+         width: 200px;
+         height: 400px;
+      }
+      .red{
+         background-color: red;
+      }
+      .yellow{
+         background-color: yellow;
+      }
+      .black{
+         background-color: black;
+      }
+      .active{
+         color: white;
+         background-color: blue;
+      }
+   </style>
+   <script src="./jquery-3.4.1.min.js"></script>
+</head>
+<body>
+   <div id="main">
+      <div class="nav">
+         <div class="nav-item active" data-value="#nav1">yellow</div>
+         <div class="nav-item" data-value="#nav2">red</div>
+         <div class="nav-item" data-value="#nav3">black</div>
+      </div>
+      <div id="nav1" class="content yellow">
+         <div class="red"></div>
+         <div class="yellow"></div>
+         <div class="black"></div>
+      </div>
+      <div id="nav2" class="content red">
+         <div class="black"></div>
+         <div class="red"></div>
+         <div class="yellow"></div>
+      </div>
+      <div id="nav3" class="content black">
+         <div class="yellow"></div>
+         <div class="black"></div>
+         <div class="red"></div>
+      </div>
+  </div>
+
+  <script>
+      $(function(){
+         var w_height = $(window).height();
+         $(".content").css('min-height', w_height - 50);
+         
+         //顶部导航栏控制
+         var $menu = $('.nav');
+         var $menuList = $menu.find('.nav-item');
+
+         //控制滚动
+         $(document).on("mousewheel DOMMouseScroll", function (e) {
+            var delta = (e.originalEvent.wheelDelta && (e.originalEvent.wheelDelta > 0 ? 1 : -1)) ||  // chrome & ie
+               (e.originalEvent.detail && (e.originalEvent.detail > 0 ? -1 : 1));   // firefox
+
+            var num = $('.nav .active').index();
+            if (delta > 0 && num > 0) {  //上滚
+               $menuList.eq(--num).click();
+            } else if (delta < 0 && num < 2) { //下滚
+               $menuList.eq(++num).click();
+            }
+         });
+
+         //给超链接绑定点击事件
+         $menuList.each(function () {
+            var $this = $(this);
+            $this.click(function (e) {
+               $('.active').removeClass('active');
+               $this.addClass('active');
+               var id = $this.attr('data-value').replace(/#/g, '');
+               //获取目标距离顶部的高度
+               var top = $('#' + id).offset().top;
+               //给滚动容器加动画的效果，滚动到目标位置
+               $('html').stop(true);
+               $('html').animate({ scrollTop: top }, 500);
+            });
+         });
+
+         //默认显示第一页
+         $menuList.eq(0).click();
+      })
+  </script>
+</body>
+</html>
